@@ -85,16 +85,20 @@ int readentropy(void *out, size_t outsize)
 void fill_with_repeating_pattern(void *out, size_t outsize)
 {
     size_t i;
-    int counter = 0;
+    int counter = 48;
     char *buf = (char *)out;
 
     if (!outsize) return;
 
     for (i = 0; i < outsize; i++) {
-        buf[i] = (char)('0' + counter);
-        if (counter >= 9)
-            counter = 0;
-        else
+        buf[i] = (char)(counter);
+        if (counter >= 122) {
+            counter = 48;
+	    if (i < outsize - 2) {
+		    buf[++i] = 0xde;
+		    buf[++i] = 0xad;
+	    }
+	} else
             counter++;
     }
 }
