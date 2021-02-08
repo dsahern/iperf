@@ -1,0 +1,2 @@
+
+gcc -g -Wall -g -o iperf3 iperf3-main.o  ./.libs/libiperf.a -static -lm
