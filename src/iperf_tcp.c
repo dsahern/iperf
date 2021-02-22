@@ -416,6 +416,9 @@ iperf_tcp_connect(struct iperf_test *test)
         lcladdr = (struct sockaddr_in *)local_res->ai_addr;
         lcladdr->sin_port = htons(test->bind_port);
 
+        opt = 1;
+        setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+
         if (bind(s, (struct sockaddr *) local_res->ai_addr, local_res->ai_addrlen) < 0) {
 	    saved_errno = errno;
 	    close(s);
@@ -431,6 +434,9 @@ iperf_tcp_connect(struct iperf_test *test)
     else if (test->bind_port) {
 	size_t addrlen;
 	struct sockaddr_storage lcl;
+
+	opt = 1;
+	setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 
 	/* IPv4 */
 	if (server_res->ai_family == AF_INET) {
