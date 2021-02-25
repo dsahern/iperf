@@ -3943,6 +3943,9 @@ iperf_new_stream(struct iperf_test *test, int s, int sender)
         free(sp);
         return NULL;
     }
+    if (test->repeating_payload)
+        fill_with_repeating_pattern(sp->buffer_fd, test->settings->blksize);
+
     sp->buffer = (char *) mmap(NULL, test->settings->blksize, PROT_READ|PROT_WRITE, MAP_PRIVATE, sp->buffer_fd, 0);
     if (sp->buffer == MAP_FAILED) {
         i_errno = IECREATESTREAM;
@@ -3975,9 +3978,7 @@ iperf_new_stream(struct iperf_test *test, int s, int sender)
         sp->diskfile_fd = -1;
 
     /* Initialize stream */
-    if (test->repeating_payload)
-        fill_with_repeating_pattern(sp->buffer, test->settings->blksize);
-    else
+    if (!test->repeating_payload)
         ret = readentropy(sp->buffer, test->settings->blksize);
 
     if ((ret < 0) || (iperf_init_stream(sp, test) < 0)) {
