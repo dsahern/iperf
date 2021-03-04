@@ -76,6 +76,31 @@ iperf_tcp_recv(struct iperf_stream *sp)
     return r;
 }
 
+#ifndef MSG_ZEROCOPY
+#define MSG_ZEROCOPY 0x4000000
+#endif
+static void iperf_tcp_zc_complete(int sd)
+{
+	const int max_batch = 16;
+	static int batch;
+
+	if (++batch == max_batch) {
+		struct msghdr msg = {0};        /* flush */
+		int ret, num = 0;
+
+		do {
+			ret = recvmsg(sd, &msg, MSG_ERRQUEUE);
+			if (ret == -1 && errno == EAGAIN)
+				break;
+			if (ret == -1)
+				printf("errqueue failed: %d\n", errno);
+			num++;
+		} while (msg.msg_flags & MSG_CTRUNC);
+
+		batch = 0;
+	}
+}
+
 
 /* iperf_tcp_send 
  *
@@ -89,11 +114,14 @@ iperf_tcp_send(struct iperf_stream *sp)
     if (!sp->pending_size)
 	sp->pending_size = sp->settings->blksize;
 
-    if (sp->test->zerocopy)
+    if (sp->test->zc_api) {
+	iperf_tcp_zc_complete(sp->socket);
+        r = send(sp->socket, sp->buffer, sp->pending_size, MSG_ZEROCOPY);
+    } else if (sp->test->zerocopy) {
 	r = Nsendfile(sp->buffer_fd, sp->socket, sp->buffer, sp->pending_size);
-    else
+    } else {
 	r = Nwrite(sp->socket, sp->buffer, sp->pending_size, Ptcp);
-
+    }
     if (r < 0)
         return r;
 
@@ -405,6 +433,17 @@ iperf_tcp_connect(struct iperf_test *test)
 	freeaddrinfo(server_res);
         i_errno = IESTREAMCONNECT;
         return -1;
+    }
+
+    if (test->zc_api) {
+#ifndef SO_ZEROCOPY
+#define SO_ZEROCOPY 60
+#endif
+        int opt = 1;
+
+        fprintf(stderr, "with zerocopy\n");
+        if (setsockopt(s, SOL_SOCKET, SO_ZEROCOPY, &opt, sizeof(opt)))
+            fprintf(stderr, "setsockopt zerocopy failed: %d\n", errno);
     }
 
     /*

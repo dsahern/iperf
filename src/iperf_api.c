@@ -922,6 +922,7 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
         {"flowlabel", required_argument, NULL, 'L'},
 #endif /* HAVE_FLOWLABEL */
         {"zerocopy", no_argument, NULL, 'Z'},
+        {"zc_api", no_argument, NULL, OPT_ZC_SOCK_API },
         {"omit", required_argument, NULL, 'O'},
         {"file", required_argument, NULL, 'F'},
         {"repeating-payload", no_argument, NULL, OPT_REPEATING_PAYLOAD},
@@ -1254,6 +1255,10 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
                     return -1;
                 }
                 test->zerocopy = 1;
+		client_flag = 1;
+                break;
+            case OPT_ZC_SOCK_API:
+                test->zc_api = 1;
 		client_flag = 1;
                 break;
             case OPT_REPEATING_PAYLOAD:
