@@ -168,6 +168,9 @@ netdial(int domain, int proto, const char *local, const char *bind_dev, int loca
     if (local) {
         if (local_port) {
             struct sockaddr_in *lcladdr;
+	    int opt = 1;
+
+	    setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
             lcladdr = (struct sockaddr_in *)local_res->ai_addr;
             lcladdr->sin_port = htons(local_port);
         }
@@ -186,6 +189,7 @@ netdial(int domain, int proto, const char *local, const char *bind_dev, int loca
     else if (local_port) {
 	size_t addrlen;
 	struct sockaddr_storage lcl;
+	int opt = 1;
 
 	/* IPv4 */
 	if (server_res->ai_family == AF_INET) {
@@ -208,6 +212,8 @@ netdial(int domain, int proto, const char *local, const char *bind_dev, int loca
 	    errno = EAFNOSUPPORT;
             return -1;
 	}
+
+	setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 
         if (bind(s, (struct sockaddr *) &lcl, addrlen) < 0) {
 	    saved_errno = errno;
