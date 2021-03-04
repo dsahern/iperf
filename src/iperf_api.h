@@ -81,6 +81,7 @@ typedef uint64_t iperf_size_t;
 #define OPT_TIMESTAMPS 22
 #define OPT_SERVER_SKEW_THRESHOLD 23
 #define OPT_BIND_DEV 24
+#define OPT_CONTROL_CHANNEL 25
 
 /* states */
 #define TEST_START 1

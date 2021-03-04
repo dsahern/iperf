@@ -910,6 +910,7 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
         {"bind-dev", required_argument, NULL, OPT_BIND_DEV},
 #endif /* HAVE_SO_BINDTODEVICE */
         {"cport", required_argument, NULL, OPT_CLIENT_PORT},
+        {"control", required_argument, NULL, OPT_CONTROL_CHANNEL},
         {"set-mss", required_argument, NULL, 'M'},
         {"no-delay", no_argument, NULL, 'N'},
         {"version4", no_argument, NULL, '4'},
@@ -1174,6 +1175,10 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
 		    return -1;
 		}
                 test->bind_port = portno;
+                break;
+	    case OPT_CONTROL_CHANNEL:
+		test->control_channel = strdup(optarg);
+		printf("Set control channel to %s\n", test->control_channel);
                 break;
             case 'M':
                 test->settings->mss = atoi(optarg);
