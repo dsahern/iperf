@@ -1,2 +1,27 @@
 
 gcc -g -Wall -g -o iperf3 iperf3-main.o  ./.libs/libiperf.a -static -lm
+
+################################################################################
+code notes
+
+main
+- iperf_new_test - allocate iperf_test and initialize
+  * iperf_test defined in iperf.h
+
+- iperf_parse_arguments -- parses command line arguments
+
+- run(test)
+  + server:  loop over 'iperf_run_server; iperf_reset_test'
+
+  + client:  iperf_run_client
+
+
+added control_channel to iperf_test
+    test->control_channel
+
+iperf_tcp_connect
+
+netdial
+
+iperf_defaults
+- sets handlers for tcp/udp accept/listen/connect/send/recv/init
