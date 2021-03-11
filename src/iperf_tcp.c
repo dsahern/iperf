@@ -161,7 +161,8 @@ iperf_tcp_accept(struct iperf_test * test)
         return -1;
     }
 
-    if (strcmp(test->cookie, cookie) != 0) {
+    if (!test->disable_cookie_check &&
+        strcmp(test->cookie, cookie) != 0) {
         if (Nwrite(s, (char*) &rbuf, sizeof(rbuf), Ptcp) < 0) {
             i_errno = IESENDMESSAGE;
             return -1;

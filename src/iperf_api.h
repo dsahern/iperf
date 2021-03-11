@@ -83,6 +83,7 @@ typedef uint64_t iperf_size_t;
 #define OPT_BIND_DEV 24
 #define OPT_CONTROL_CHANNEL 25
 #define OPT_ZC_SOCK_API 26
+#define OPT_DISABLE_COOKIE 27
 
 /* states */
 #define TEST_START 1
