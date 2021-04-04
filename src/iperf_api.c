@@ -923,6 +923,7 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
 #endif /* HAVE_FLOWLABEL */
         {"zerocopy", no_argument, NULL, 'Z'},
         {"zc_api", no_argument, NULL, OPT_ZC_SOCK_API },
+        {"io_uring", no_argument, NULL, OPT_IO_URING_API },
         {"disable_cookie", no_argument, NULL, OPT_DISABLE_COOKIE },
         {"omit", required_argument, NULL, 'O'},
         {"file", required_argument, NULL, 'F'},
@@ -1261,6 +1262,9 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
             case OPT_ZC_SOCK_API:
                 test->zc_api = 1;
 		client_flag = 1;
+                break;
+            case OPT_IO_URING_API:
+                test->io_uring = 1;
                 break;
             case OPT_DISABLE_COOKIE:
                 test->disable_cookie_check = 1;

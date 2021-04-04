@@ -1,5 +1,9 @@
 
+LIBURING=/home/david/liburing.git/src
+CFLAGS="-I${LIBURING}/include -g" LIBS=${LIBURING}/liburing.a ./configure --without-openssl
+
 gcc -g -Wall -g -o iperf3 iperf3-main.o  ./.libs/libiperf.a -static -lm
+gcc -g -Wall -g -o iperf3 iperf3-main.o ./.libs/libiperf.a -L${LIBURING} -luring -lm
 
 ################################################################################
 code notes

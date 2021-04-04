@@ -64,6 +64,8 @@
 #include "cjson.h"
 #include "iperf_time.h"
 
+#include "liburing.h"
+
 #if defined(HAVE_SSL)
 #include <openssl/bio.h>
 #include <openssl/evp.h>
@@ -303,6 +305,7 @@ struct iperf_test
     int	      json_output;                      /* -J option - JSON output */
     int	      zerocopy;                         /* -Z option - use sendfile */
     int	      zc_api;                           /* --zc_api option - use socket API */
+    int	      io_uring;                         /* --io_uring option - use io_uring API */
     int	      disable_cookie_check;             /* --disable_cookie option */
     int       debug;				/* -d option - enable debug */
     int	      get_server_output;		/* --get-server-output */
@@ -318,6 +321,8 @@ struct iperf_test
     int       max_fd;
     fd_set    read_set;                         /* set of read sockets */
     fd_set    write_set;                        /* set of write sockets */
+
+    struct io_uring ring;
 
     /* Interval related members */ 
     int       omitting;
