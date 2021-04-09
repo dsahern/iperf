@@ -86,17 +86,28 @@ void fill_with_repeating_pattern(int fd, size_t outsize)
 {
     char counter = 48;
     char buf[2] = {0xde, 0xad};
+    FILE *fp;
     size_t i;
 
     if (!outsize) return;
 
+    fp = fdopen(fd, "w");
     for (i = 0; i < outsize; i++) {
-        write(fd, &counter, 1);
+        if (fp)
+            fprintf(fp, "%c", counter);
+	else
+            write(fd, &counter, 1);
+
         if (++counter >= 122) {
-	    write(fd, buf, sizeof(buf));
+            if (fp)
+	        fprintf(fp, "%c%c", buf[0], buf[1]);
+	    else
+	        write(fd, buf, sizeof(buf));
             counter = 48;
 	}
     }
+    if (fp)
+        fflush(fp);
 }
 
 
