@@ -53,7 +53,7 @@ typedef uint64_t iperf_size_t;
 #define Ptcp SOCK_STREAM
 #define Pudp SOCK_DGRAM
 #define Psctp 12
-#define DEFAULT_UDP_BLKSIZE 1460 /* default is dynamically set, else this */
+#define DEFAULT_UDP_BLKSIZE 64 /* default is dynamically set, else this */
 #define DEFAULT_TCP_BLKSIZE (128 * 1024)  /* default read/write block size */
 #define DEFAULT_SCTP_BLKSIZE (64 * 1024)
 

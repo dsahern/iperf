@@ -43,7 +43,9 @@
 #include "iperf_tcp.h"
 #include "net.h"
 #include "cjson.h"
+#if defined(HAVE_LIBURING)
 #include "liburing.h"
+#endif
 
 #if defined(HAVE_FLOWLABEL)
 #include "flowlabel.h"
@@ -102,6 +104,7 @@ static void iperf_tcp_zc_complete(int sd)
 	}
 }
 
+#if defined(HAVE_LIBURING)
 int iperf_io_uring_init(struct iperf_test *test)
 {
 	unsigned nentries = 16;
@@ -179,6 +182,7 @@ int io_uring_send(struct iperf_stream *sp)
 
 	return sp->pending_size;
 }
+#endif
 
 /* iperf_tcp_send 
  *
@@ -197,8 +201,10 @@ iperf_tcp_send(struct iperf_stream *sp)
         r = send(sp->socket, sp->buffer, sp->pending_size, MSG_ZEROCOPY);
     } else if (sp->test->zerocopy) {
 	r = Nsendfile(sp->buffer_fd, sp->socket, sp->buffer, sp->pending_size);
+#if defined(HAVE_LIBURING)
     } else if (sp->test->io_uring) {
 	r = io_uring_send(sp);
+#endif
     } else {
 	r = Nwrite(sp->socket, sp->buffer, sp->pending_size, Ptcp);
     }
@@ -250,10 +256,12 @@ iperf_tcp_accept(struct iperf_test * test)
         close(s);
     }
 
+#if defined(HAVE_LIBURING)
     if (test->io_uring && iperf_io_uring_init(test) < 0) {
         close(s);
 	return -1;
     }
+#endif
 
     return s;
 }
@@ -492,10 +500,12 @@ iperf_tcp_connect(struct iperf_test *test)
     int saved_errno;
     int rcvbuf_actual, sndbuf_actual;
 
+#if defined(HAVE_LIBURING)
     if (test->io_uring && iperf_io_uring_init(test) < 0) {
         i_errno = IEINITTEST;
         return -1;
     }
+#endif
 
     if (test->bind_address) {
         memset(&hints, 0, sizeof(hints));
