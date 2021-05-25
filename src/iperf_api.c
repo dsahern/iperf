@@ -1183,7 +1183,6 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
                 break;
 	    case OPT_CONTROL_CHANNEL:
 		test->control_channel = strdup(optarg);
-		printf("Set control channel to %s\n", test->control_channel);
                 break;
             case 'M':
                 test->settings->mss = atoi(optarg);
