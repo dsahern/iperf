@@ -63,8 +63,10 @@ iperf_tcp_recv(struct iperf_stream *sp)
     int index;
     char dblErr = 0;    
 
-    //r = Nread(sp->socket, sp->buffer, sp->settings->blksize, Ptcp);
-    r = recv(sp->socket, sp->buffer, sp->settings->blksize, MSG_TRUNC);
+    if (sp->test->data_val == 1)
+        r = Nread(sp->socket, sp->buffer, sp->settings->blksize, Ptcp);
+    else 
+        r = recv(sp->socket, sp->buffer, sp->settings->blksize, MSG_TRUNC);
 
     if (r < 0)
         return r;
@@ -74,7 +76,7 @@ iperf_tcp_recv(struct iperf_stream *sp)
      * Have to handle case where pattern restarts to zero at any point in bfr since back to back data blocks occur in TCP
      */
 
-    if (sp->test->data_val == 1) {
+    if (sp->test->data_val == 1 && r > 1) {
         ptrData = (unsigned char *)sp->buffer;
         for (index = 0; index < r; index++) {
             if (index == 0) {
