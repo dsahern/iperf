@@ -94,9 +94,10 @@ iperf_udp_recv(struct iperf_stream *sp)
         ptrData = (unsigned char *)sp->buffer+12;
         for (index = 0; index < (r-12); index++) {
             if (*ptrData != (unsigned char) index) {
-                sp->data_error++;
-                iperf_err(sp->test, "Validation Error- index = %d, expected = %d, actual = %d", index, index, (int)*ptrData);
+                if (sp->data_error == 0)
+                    iperf_err(sp->test, "Validation Error- index = %d, expected = %d, actual = %d", index, index, (int)*ptrData);
 
+                sp->data_error++;
                 break;
             }
             else {

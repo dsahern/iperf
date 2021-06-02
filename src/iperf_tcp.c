@@ -95,8 +95,10 @@ iperf_tcp_recv(struct iperf_stream *sp)
                     valCheck = 1;
                 }         
                 else {
+                    if (sp->data_error == 0)
+                        iperf_err(sp->test, "Validation Error- index = %d, expected = %d, actual = %d", index, valCheck, (int)*ptrData);
+
                     sp->data_error++;
-                    iperf_err(sp->test, "Validation Error- index = %d, expected = %d, actual = %d", index, valCheck, (int)*ptrData);
                     break;
                 }
             }
